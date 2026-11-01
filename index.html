@@ -1,243 +1,374 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>LuarmorX — Auto Protect</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LuarmorX — Script Publisher</title>
+
 <style>
 :root {
-  --bg:#080c18;
-  --panel:#0d1224;
-  --panel2:#111827;
-  --border:#1a2540;
-  --green:#00ff88;
-  --cyan:#00cfff;
-  --text:#dde6ff;
-  --muted:#71809e;
+  --bg: #080c18;
+  --panel: #0d1224;
+  --panel2: #111827;
+  --border: #1a2540;
+  --green: #00ff88;
+  --cyan: #00cfff;
+  --text: #dde6ff;
+  --muted: #71809e;
 }
-* {box-sizing:border-box}
+
+* {
+  box-sizing: border-box;
+}
+
 body {
-  margin:0;
-  padding:25px 14px 50px;
-  background:var(--bg);
-  color:var(--text);
-  font-family:Arial,sans-serif;
+  margin: 0;
+  padding: 25px 14px 50px;
+  background: var(--bg);
+  color: var(--text);
+  font-family: Arial, sans-serif;
 }
-.container {
-  max-width:700px;
-  margin:auto;
+
+main {
+  max-width: 720px;
+  margin: auto;
 }
+
+header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  margin: 15px 0 28px;
+}
+
 .logo {
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  gap:12px;
-  margin:15px 0 30px;
+  width: 45px;
+  height: 45px;
+  display: grid;
+  place-items: center;
+  border-radius: 12px;
+  color: #080c18;
+  font-size: 26px;
+  background: linear-gradient(135deg, var(--green), var(--cyan));
 }
-.logo-icon {
-  width:42px;height:42px;
-  display:grid;place-items:center;
-  border-radius:12px;
-  color:#080c18;
-  font-size:24px;
-  background:linear-gradient(135deg,var(--green),var(--cyan));
+
+.brand {
+  font-size: 25px;
+  font-weight: 900;
+  letter-spacing: 3px;
+  color: white;
 }
-.logo-text {
-  font-size:23px;
-  font-weight:900;
-  letter-spacing:3px;
-  color:white;
+
+.brand span {
+  color: var(--green);
 }
-.logo-text span {color:var(--green)}
+
 .subtitle {
-  text-align:center;
-  color:var(--muted);
-  font-size:12px;
-  margin-top:-18px;
-  margin-bottom:28px;
+  text-align: center;
+  color: var(--muted);
+  font-size: 11px;
+  letter-spacing: 2px;
+  margin: -15px 0 28px;
 }
+
 .card {
-  background:var(--panel);
-  border:1px solid var(--border);
-  border-radius:13px;
-  padding:18px;
-  margin-bottom:13px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 15px;
+  padding: 20px;
+  margin-bottom: 16px;
 }
-.card-title {
-  font-size:11px;
-  font-weight:bold;
-  letter-spacing:1.5px;
-  color:var(--muted);
-  margin-bottom:15px;
+
+.heading {
+  font-size: 12px;
+  font-weight: bold;
+  letter-spacing: 2px;
+  color: var(--muted);
+  margin-bottom: 18px;
 }
+
 label {
-  display:block;
-  color:var(--muted);
-  font-size:11px;
-  margin-bottom:7px;
+  display: block;
+  color: var(--muted);
+  font-size: 12px;
+  margin: 15px 0 8px;
 }
-input,textarea {
-  width:100%;
-  background:var(--panel2);
-  border:1px solid var(--border);
-  border-radius:8px;
-  padding:13px;
-  color:white;
-  outline:none;
-  font-family:monospace;
-  font-size:13px;
+
+input, textarea {
+  width: 100%;
+  background: var(--panel2);
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  padding: 14px;
+  color: white;
+  outline: none;
+  font: 13px monospace;
 }
-input:focus,textarea:focus {
-  border-color:var(--cyan);
+
+input:focus, textarea:focus {
+  border-color: var(--cyan);
 }
+
 textarea {
-  min-height:190px;
-  resize:vertical;
-  line-height:1.6;
+  min-height: 260px;
+  resize: vertical;
+  line-height: 1.6;
 }
+
 button {
-  width:100%;
-  border:0;
-  padding:14px;
-  border-radius:9px;
-  cursor:pointer;
-  font-weight:bold;
-  font-size:13px;
-  letter-spacing:1px;
-  margin-top:10px;
+  width: 100%;
+  border: 0;
+  padding: 16px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 13px;
+  letter-spacing: 1px;
+  margin-top: 14px;
 }
+
 .primary {
-  background:linear-gradient(135deg,var(--green),var(--cyan));
-  color:#080c18;
+  background: linear-gradient(135deg, var(--green), var(--cyan));
+  color: #080c18;
 }
+
 .secondary {
-  background:var(--panel2);
-  border:1px solid var(--border);
-  color:white;
+  background: var(--panel2);
+  border: 1px solid var(--border);
+  color: white;
 }
+
+button:disabled {
+  opacity: .5;
+  cursor: wait;
+}
+
 .status {
-  display:none;
-  padding:13px;
-  background:#10251e;
-  border:1px solid #17633d;
-  color:var(--green);
-  border-radius:8px;
-  font-size:12px;
-  margin-top:12px;
+  display: none;
+  padding: 14px;
+  border-radius: 9px;
+  margin-top: 14px;
+  font-size: 12px;
+  overflow-wrap: anywhere;
 }
-.preview {
-  background:#050810;
-  border:1px solid var(--border);
-  padding:15px;
-  border-radius:9px;
-  color:var(--cyan);
-  font-family:monospace;
-  font-size:12px;
-  overflow-wrap:anywhere;
+
+.ok {
+  display: block;
+  background: #10251e;
+  border: 1px solid #17633d;
+  color: var(--green);
 }
+
+.err {
+  display: block;
+  background: #2a141b;
+  border: 1px solid #70303c;
+  color: #ff8794;
+}
+
+.url {
+  background: #050810;
+  border: 1px solid var(--cyan);
+  padding: 14px;
+  border-radius: 9px;
+  color: var(--cyan);
+  font: 12px monospace;
+  overflow-wrap: anywhere;
+}
+
+.note {
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.7;
+  margin-top: 15px;
+}
+
 .footer {
-  text-align:center;
-  color:var(--muted);
-  font-size:10px;
-  margin-top:30px;
+  text-align: center;
+  color: var(--muted);
+  font-size: 10px;
+  margin-top: 30px;
+  letter-spacing: 1px;
+}
+
+[hidden] {
+  display: none !important;
 }
 </style>
 </head>
+
 <body>
 
-<div class="container">
+<main>
 
-  <div class="logo">
-    <div class="logo-icon">⬡</div>
-    <div class="logo-text">LUARMOR<span>X</span></div>
-  </div>
+<header>
+  <div class="logo">⬡</div>
+  <div class="brand">LUARMOR<span>X</span></div>
+</header>
 
-  <div class="subtitle">
-    SCRIPT MANAGEMENT & PROTECTION PLATFORM
-  </div>
-
-  <div class="card">
-    <div class="card-title">CONFIGURACIÓN</div>
-
-    <label>Nombre del proyecto</label>
-    <input id="name" placeholder="Mi proyecto">
-  </div>
-
-  <div class="card">
-    <div class="card-title">SCRIPT LUA</div>
-
-    <label>Contenido del script</label>
-    <textarea id="source"
-      placeholder="-- Escribe o pega tu código Lua aquí"></textarea>
-
-    <button class="primary" onclick="preview()">
-      GENERAR VISTA PREVIA
-    </button>
-
-    <div class="status" id="status"></div>
-  </div>
-
-  <div class="card" id="result" style="display:none">
-    <div class="card-title">VISTA PREVIA</div>
-
-    <div class="preview" id="preview"></div>
-
-    <button class="secondary" onclick="copyCode()">
-      COPIAR CÓDIGO
-    </button>
-  </div>
-
-  <div class="card">
-    <div class="card-title">INFORMACIÓN</div>
-    <p style="font-size:12px;color:var(--muted);line-height:1.8">
-      LuarmorX permite preparar y gestionar proyectos Lua.
-      La publicación y distribución de proyectos se habilitará
-      cuando conectemos el almacenamiento y la API.
-    </p>
-  </div>
-
-  <div class="footer">
-    LUARMORX © 2026 — ALL RIGHTS RESERVED
-  </div>
-
+<div class="subtitle">
+  SCRIPT PUBLISHING PLATFORM
 </div>
 
+<section class="card">
+
+  <div class="heading">NUEVO PROYECTO</div>
+
+  <label for="name">NOMBRE DEL PROYECTO</label>
+  <input
+    id="name"
+    maxlength="60"
+    placeholder="Mi proyecto Lua"
+  >
+
+  <label for="source">CONTENIDO LUA</label>
+  <textarea
+    id="source"
+    maxlength="100000"
+    spellcheck="false"
+    placeholder="-- Escribe o pega tu código Lua aquí..."
+  ></textarea>
+
+  <button class="primary" id="create">
+    PUBLICAR Y GENERAR URL
+  </button>
+
+  <div id="status" class="status"></div>
+
+</section>
+
+<section class="card" id="result" hidden>
+
+  <div class="heading">PUBLICACIÓN COMPLETADA</div>
+
+  <p style="font-size:13px;color:var(--green)">
+    ✓ Tu proyecto se ha guardado correctamente.
+  </p>
+
+  <label>URL DEL PROYECTO</label>
+
+  <div class="url" id="url"></div>
+
+  <button class="secondary" id="copy">
+    COPIAR URL
+  </button>
+
+  <p class="note">
+    Guarda esta URL en tus notas. El enlace permite consultar
+    el contenido publicado mientras el archivo siga almacenado.
+  </p>
+
+</section>
+
+<section class="card">
+
+  <div class="heading">INFORMACIÓN</div>
+
+  <p class="note">
+    LuarmorX permite preparar y publicar proyectos Lua.
+    Cada publicación genera un enlace único.
+  </p>
+
+  <p class="note">
+    Los archivos se almacenan mediante Vercel Blob.
+    No publiques información privada ni credenciales.
+  </p>
+
+</section>
+
+<div class="footer">
+  LUARMORX © 2026 — ALL RIGHTS RESERVED
+</div>
+
+</main>
+
 <script>
-function preview() {
-  const name = document.getElementById("name").value.trim();
-  const code = document.getElementById("source").value;
+const $ = id => document.getElementById(id);
 
-  const status = document.getElementById("status");
-  const result = document.getElementById("result");
+function showStatus(message, success) {
+  const element = $("status");
+  element.textContent = message;
+  element.className = "status " + (success ? "ok" : "err");
+}
 
-  if (!code.trim()) {
-    status.style.display = "block";
-    status.style.color = "#ff4757";
-    status.textContent = "Introduce un script primero.";
+$("create").addEventListener("click", async () => {
+
+  const name = $("name").value.trim() || "Mi proyecto";
+  const source = $("source").value;
+
+  if (!source.trim()) {
+    showStatus("Pega tu código Lua antes de publicar.", false);
     return;
   }
 
-  document.getElementById("preview").textContent =
-    "-- " + (name || "Mi proyecto") + "\n\n" + code;
+  const button = $("create");
 
-  result.style.display = "block";
-  status.style.display = "block";
-  status.style.color = "#00ff88";
-  status.textContent = "Vista previa generada correctamente.";
+  button.disabled = true;
+  button.textContent = "PUBLICANDO...";
 
-  result.scrollIntoView({behavior:"smooth"});
-}
+  $("result").hidden = true;
 
-function copyCode() {
-  const code = document.getElementById("preview").textContent;
+  try {
 
-  navigator.clipboard.writeText(code).then(() => {
-    alert("Código copiado correctamente.");
-  }).catch(() => {
-    alert("No se pudo copiar el código.");
-  });
-}
+    const response = await fetch("/api/create", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        name,
+        source
+      })
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.error || "Error al publicar.");
+    }
+
+    $("url").textContent = data.url;
+    $("result").hidden = false;
+
+    showStatus("Proyecto publicado correctamente.", true);
+
+  } catch (error) {
+
+    showStatus(
+      error.message || "No se pudo conectar con el servidor.",
+      false
+    );
+
+  } finally {
+
+    button.disabled = false;
+    button.textContent = "PUBLICAR Y GENERAR URL";
+
+  }
+
+});
+
+$("copy").addEventListener("click", async () => {
+
+  const url = $("url").textContent;
+
+  try {
+
+    await navigator.clipboard.writeText(url);
+    $("copy").textContent = "COPIADO CORRECTAMENTE";
+
+  } catch {
+
+    $("copy").textContent = "NO SE PUDO COPIAR";
+
+  }
+
+  setTimeout(() => {
+    $("copy").textContent = "COPIAR URL";
+  }, 1800);
+
+});
 </script>
 
 </body>
