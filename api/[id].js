@@ -1,11 +1,21 @@
+import { createClient } from '@supabase/supabase-js';
+
+const supabase = createClient(
+  process.env.SUPABASE_URL,
+  process.env.SUPABASE_SERVICE_KEY
+);
+
 export default async function handler(req, res) {
   try {
     const { id } = req.query;
 
-    if (!globalThis.__scripts) globalThis.__scripts = new Map();
-    const data = globalThis.__scripts.get(id);
+    const { data, error } = await supabase
+      .from("scripts")
+      .select("lua")
+      .eq("id", id)
+      .single();
 
-    if (!data) {
+    if (error || !data) {
       return res.status(404).send("Script not found or expired");
     }
 
