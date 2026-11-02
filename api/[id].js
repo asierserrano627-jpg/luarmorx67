@@ -19,13 +19,11 @@ export default async function handler(req, res) {
       return res.status(404).send("Script not found or expired");
     }
 
+    const accept = (req.headers["accept"] || "").toLowerCase();
     const ua = (req.headers["user-agent"] || "").toLowerCase();
-    const isBrowser =
-      ua.includes("mozilla") ||
-      ua.includes("chrome") ||
-      ua.includes("safari") ||
-      ua.includes("firefox") ||
-      ua.includes("edg");
+
+    // Detección mejorada
+    const isBrowser = accept.includes("text/html") || ua.includes("mozilla") || ua.includes("chrome");
 
     // === NAVEGADOR → Página bonita ===
     if (isBrowser) {
