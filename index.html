@@ -72,18 +72,16 @@ textarea{resize:vertical;min-height:130px;line-height:1.6}
 
 <div id="outblock" style="display:none;flex-direction:column;gap:10px">
 
-  <!-- Gist 1: Script cifrado -->
   <div class="card">
-    <div class="card-title">Tu Gist <span class="badge b-ok">LIVE</span></div>
-    <div class="lbl" style="margin-bottom:6px">URL raw (para Roblox)</div>
+    <div class="card-title">Tu Link <span class="badge b-ok">LIVE</span></div>
+    <div class="lbl" style="margin-bottom:6px">URL (para Roblox)</div>
     <div class="url-display green" id="urlbox">—</div>
     <div style="display:flex;gap:6px">
-      <button class="cp-btn" style="flex:1;padding:7px" onclick="cp(G.rawUrl,this)">Copiar URL raw</button>
-      <button class="cp-btn" style="flex:1;padding:7px" onclick="window.open(G.gistUrl,'_blank')">Ver Gist</button>
+      <button class="cp-btn" style="flex:1;padding:7px" onclick="cp(G.rawUrl,this)">Copiar URL</button>
+      <button class="cp-btn" style="flex:1;padding:7px" onclick="window.open(G.rawUrl,'_blank')">Ver página</button>
     </div>
   </div>
 
-  <!-- Preview loadstring -->
   <div class="lm-preview" id="previewblock">
     <div class="lm-icon">📜</div>
     <div class="lm-title">Loadstring listo</div>
@@ -95,7 +93,6 @@ textarea{resize:vertical;min-height:130px;line-height:1.6}
     <div class="lm-note">Contents can not be displayed on browser • https://luarmor.net/</div>
   </div>
 
-  <!-- Loader para distribuir -->
   <div class="card" id="loadercard">
     <div class="row-hd"><span>Loader <span class="badge b-ok">Distribuye esto</span></span><button class="cp-btn" onclick="cp(G.loader,this)">Copiar</button></div>
     <div class="code-box" id="loaderbox"></div>
@@ -107,104 +104,153 @@ textarea{resize:vertical;min-height:130px;line-height:1.6}
 </div>
 
 <script>
-var WORKER_URL='https://luarmorx67.vercel.app'; // ← PON AQUÍ TU URL DEL WORKER
-var G={loader:'',rawUrl:'',gistUrl:'',xorKey:[],secret:''};
-var ABC='abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-function rnd(n){var s='';for(var i=0;i<n;i++)s+=ABC[Math.floor(Math.random()*ABC.length)];return s;}
-function fnv(s){var h=0x811c9dc5;for(var i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,0x01000193)>>>0;}return h.toString(16).padStart(8,'0');}
-function xorStr(str,k){var o='';for(var i=0;i<str.length;i++)o+=String.fromCharCode(str.charCodeAt(i)^k[i%k.length]);return o;}
-function toBytes(str){var o='';for(var i=0;i<str.length;i++)o+='\\'+str.charCodeAt(i);return o;}
-function setMsg(t,c){var e=document.getElementById('stepmsg');e.style.color=c||'var(--cyan)';e.textContent=t;}
-function setPb(p){document.getElementById('pb').style.width=p+'%';}
-function sleep(ms){return new Promise(function(r){setTimeout(r,ms);});}
-function cp(txt,el){
-  if(!txt)return;
-  navigator.clipboard.writeText(txt).catch(function(){var t=document.createElement('textarea');t.value=txt;document.body.appendChild(t);t.select();document.execCommand('copy');document.body.removeChild(t);});
-  var o=el.textContent;el.textContent='¡Copiado!';setTimeout(function(){el.textContent=o;},1500);
+var G = {loader:'', rawUrl:'', xorKey:[], secret:''};
+var ABC = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+
+function rnd(n){
+  var s = '';
+  for(var i=0;i<n;i++) s += ABC[Math.floor(Math.random()*ABC.length)];
+  return s;
 }
 
-function buildCiphered(src,secret){
-  G.xorKey=[];
-  for(var i=0;i<24;i++)G.xorKey.push(Math.floor(Math.random()*256));
-  var xkStr=G.xorKey.join(',');
-  var srcHash=fnv(src+secret);
-  var secretHash=fnv(secret);
-  var xored=xorStr(src,G.xorKey);
-  var payload=toBytes(xored);
-  var chunks=[];
-  for(var i=0;i<payload.length;i+=60)chunks.push('"'+payload.slice(i,i+60)+'"');
-  var vFh='_'+rnd(8),vXd='_'+rnd(8),vXk='_'+rnd(8),vSh='_'+rnd(8),vSec='_'+rnd(8);
-  var vCh='_'+rnd(8),vRw='_'+rnd(8),vDc='_'+rnd(8),vFn='_'+rnd(8),vEr='_'+rnd(8);
-  var vi='_i'+rnd(4),vs='_s'+rnd(4),vk='_k'+rnd(4),vr='_r'+rnd(4);
-  return '-- LuarmorX Protected\n'+
-    'local function '+vFh+'('+vs+') local '+vr+',n=0x811c9dc5,#'+vs+' for '+vi+'=1,n do '+vr+'=bit32.band(bit32.bxor('+vr+','+vs+':byte('+vi+'))*0x01000193,0xFFFFFFFF) end return string.format("%08x",'+vr+') end\n'+
-    'local function '+vXd+'('+vs+','+vk+') local '+vr+',n={},#'+vk+' for '+vi+'=1,#'+vs+' do '+vr+'['+vi+']=string.char(bit32.bxor('+vs+':byte('+vi+'),'+vk+'[(('+vi+'-1)%n)+1])) end return table.concat('+vr+') end\n'+
-    'local '+vXk+'={'+xkStr+'}\n'+
-    'local '+vSh+'="'+srcHash+'"\n'+
-    'local '+vSec+'="'+secretHash+'"\n'+
-    'local _a=...\n'+
-    'if not _a or '+vFh+'(_a)~='+vSec+' then game:GetService("Players").LocalPlayer:Kick("[LuarmorX] Anti-tamper.") return end\n'+
-    'local '+vCh+'={'+chunks.join(',')+'}\n'+
-    'local '+vRw+'=table.concat('+vCh+')\n'+
-    'local '+vDc+'='+vXd+'('+vRw+','+vXk+')\n'+
-    'if '+vFh+'('+vDc+'.._a)~='+vSh+' then warn("[LuarmorX] Integrity fail") return end\n'+
-    'local '+vFn+','+vEr+'=loadstring('+vDc+')\n'+
-    'if '+vFn+' then '+vFn+'() else warn("[LuarmorX] "..('+vEr+' or "?")) end';
+function fnv(s){
+  var h = 0x811c9dc5;
+  for(var i=0;i<s.length;i++){
+    h ^= s.charCodeAt(i);
+    h = Math.imul(h, 0x01000193) >>> 0;
+  }
+  return h.toString(16).padStart(8,'0');
+}
+
+function xorStr(str, k){
+  var o = '';
+  for(var i=0;i<str.length;i++) o += String.fromCharCode(str.charCodeAt(i) ^ k[i % k.length]);
+  return o;
+}
+
+function toBytes(str){
+  var o = '';
+  for(var i=0;i<str.length;i++) o += '\\' + str.charCodeAt(i);
+  return o;
+}
+
+function setMsg(t, c){
+  var e = document.getElementById('stepmsg');
+  e.style.color = c || 'var(--cyan)';
+  e.textContent = t;
+}
+
+function setPb(p){
+  document.getElementById('pb').style.width = p + '%';
+}
+
+function sleep(ms){
+  return new Promise(function(r){ setTimeout(r, ms); });
+}
+
+function cp(txt, el){
+  if(!txt) return;
+  navigator.clipboard.writeText(txt).catch(function(){
+    var t = document.createElement('textarea');
+    t.value = txt;
+    document.body.appendChild(t);
+    t.select();
+    document.execCommand('copy');
+    document.body.removeChild(t);
+  });
+  var o = el.textContent;
+  el.textContent = '¡Copiado!';
+  setTimeout(function(){ el.textContent = o; }, 1500);
+}
+
+function buildCiphered(src, secret){
+  G.xorKey = [];
+  for(var i=0;i<24;i++) G.xorKey.push(Math.floor(Math.random()*256));
+
+  var xkStr = G.xorKey.join(',');
+  var srcHash = fnv(src + secret);
+  var secretHash = fnv(secret);
+  var xored = xorStr(src, G.xorKey);
+  var payload = toBytes(xored);
+
+  var chunks = [];
+  for(var i=0;i<payload.length;i+=60) chunks.push('"' + payload.slice(i, i+60) + '"');
+
+  var vFh = '_' + rnd(8), vXd = '_' + rnd(8), vXk = '_' + rnd(8), vSh = '_' + rnd(8), vSec = '_' + rnd(8);
+  var vCh = '_' + rnd(8), vRw = '_' + rnd(8), vDc = '_' + rnd(8), vFn = '_' + rnd(8), vEr = '_' + rnd(8);
+  var vi = '_i' + rnd(4), vs = '_s' + rnd(4), vk = '_k' + rnd(4), vr = '_r' + rnd(4);
+
+  return '-- LuarmorX Protected\n' +
+    'local function ' + vFh + '(' + vs + ') local ' + vr + ',n=0x811c9dc5,#' + vs + ' for ' + vi + '=1,n do ' + vr + '=bit32.band(bit32.bxor(' + vr + ',' + vs + ':byte(' + vi + '))*0x01000193,0xFFFFFFFF) end return string.format("%08x",' + vr + ') end\n' +
+    'local function ' + vXd + '(' + vs + ',' + vk + ') local ' + vr + ',n={},#' + vk + ' for ' + vi + '=1,#' + vs + ' do ' + vr + '[' + vi + ']=string.char(bit32.bxor(' + vs + ':byte(' + vi + '),' + vk + '[((' + vi + '-1)%n)+1])) end return table.concat(' + vr + ') end\n' +
+    'local ' + vXk + '={' + xkStr + '}\n' +
+    'local ' + vSh + '="' + srcHash + '"\n' +
+    'local ' + vSec + '="' + secretHash + '"\n' +
+    'local _a=...\n' +
+    'if not _a or ' + vFh + '(_a)\~=' + vSec + ' then game:GetService("Players").LocalPlayer:Kick("[LuarmorX] Anti-tamper.") return end\n' +
+    'local ' + vCh + '={' + chunks.join(',') + '}\n' +
+    'local ' + vRw + '=table.concat(' + vCh + ')\n' +
+    'local ' + vDc + '=' + vXd + '(' + vRw + ',' + vXk + ')\n' +
+    'if ' + vFh + '(' + vDc + '.._a)\~=' + vSh + ' then warn("[LuarmorX] Integrity fail") return end\n' +
+    'local ' + vFn + ',' + vEr + '=loadstring(' + vDc + ')\n' +
+    'if ' + vFn + ' then ' + vFn + '() else warn("[LuarmorX] "..(' + vEr + ' or "?")) end';
 }
 
 async function uploadWorker(id, lua, loader){
-  var resp=await fetch(WORKER_URL+'/api/upload',{
-    method:'POST',
-    headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({id:id,lua:lua,loader:loader})
+  var base = window.location.origin;
+  var resp = await fetch(base + '/api/upload', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({id: id, lua: lua, loader: loader})
   });
+
   if(!resp.ok){
-    var ej=await resp.json().catch(function(){return{};});
-    throw new Error(ej.error||'HTTP '+resp.status);
+    var ej = await resp.json().catch(function(){ return {}; });
+    throw new Error(ej.error || 'HTTP ' + resp.status);
   }
   return await resp.json();
 }
 
 async function doAll(){
-  var fnname=document.getElementById('fnname').value.trim().replace(/\s+/g,'-').toLowerCase()||'script';
-  var src=document.getElementById('src').value.trim();
-  if(!src){alert('Pega tu script Lua');return;}
+  var fnname = document.getElementById('fnname').value.trim().replace(/\s+/g,'-').toLowerCase() || 'script';
+  var src = document.getElementById('src').value.trim();
+  if(!src){ alert('Pega tu script Lua'); return; }
 
-  var btn=document.getElementById('mainbtn');
-  btn.disabled=true;
-  document.getElementById('pw').style.display='block';
-  document.getElementById('outblock').style.display='none';
+  var btn = document.getElementById('mainbtn');
+  btn.disabled = true;
+  document.getElementById('pw').style.display = 'block';
+  document.getElementById('outblock').style.display = 'none';
 
   try{
-    // Paso 1: Cifrar
-    setMsg('Cifrando script...');setPb(15);await sleep(80);
-    G.secret='LMX_'+rnd(20);
-    var ciphered=buildCiphered(src,G.secret);
+    setMsg('Cifrando script...'); setPb(15); await sleep(80);
+    G.secret = 'LMX_' + rnd(20);
+    var ciphered = buildCiphered(src, G.secret);
 
-    // Paso 2: Subir al Worker
-    setMsg('Subiendo al servidor...');setPb(65);
-    var scriptId=rnd(12);
-    G.rawUrl=WORKER_URL+'/api/'+scriptId;
-    G.loader='-- LuarmorX Protected\nscript_key = "KEY"; -- A key system is active\nloadstring(game:HttpGet("'+G.rawUrl+'"))("'+G.secret+'")';
-    await uploadWorker(scriptId,ciphered,G.loader);
+    setMsg('Subiendo al servidor...'); setPb(65);
+    var scriptId = rnd(12);
+    G.rawUrl = window.location.origin + '/api/' + scriptId;
+    G.loader = '-- LuarmorX Protected\nscript_key = "KEY"; -- A key system is active\nloadstring(game:HttpGet("' + G.rawUrl + '"))("' + G.secret + '")';
 
-    setPb(100);await sleep(80);
+    await uploadWorker(scriptId, ciphered, G.loader);
 
-    // Mostrar resultados
-    document.getElementById('urlbox').textContent=G.rawUrl;
-    document.getElementById('preview-url').textContent='game:HttpGet("'+G.rawUrl+'")';
-    document.getElementById('loaderbox').textContent=G.loader;
+    setPb(100); await sleep(80);
 
-    var ob=document.getElementById('outblock');
-    ob.style.display='flex';ob.style.flexDirection='column';ob.style.gap='10px';
-    setMsg('✓ Subido — Gist listo','var(--green)');
-    ob.scrollIntoView({behavior:'smooth',block:'start'});
+    document.getElementById('urlbox').textContent = G.rawUrl;
+    document.getElementById('preview-url').textContent = 'game:HttpGet("' + G.rawUrl + '")';
+    document.getElementById('loaderbox').textContent = G.loader;
 
-  }catch(e){
-    setMsg('Error: '+e.message,'var(--red)');
-  }finally{
-    document.getElementById('pw').style.display='none';
-    btn.disabled=false;
+    var ob = document.getElementById('outblock');
+    ob.style.display = 'flex';
+    ob.style.flexDirection = 'column';
+    ob.style.gap = '10px';
+    setMsg('✓ Subido correctamente', 'var(--green)');
+    ob.scrollIntoView({behavior:'smooth', block:'start'});
+
+  } catch(e){
+    setMsg('Error: ' + e.message, 'var(--red)');
+  } finally {
+    document.getElementById('pw').style.display = 'none';
+    btn.disabled = false;
   }
 }
 </script>
