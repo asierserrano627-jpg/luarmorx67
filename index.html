@@ -104,7 +104,7 @@ textarea{resize:vertical;min-height:130px;line-height:1.6}
 </div>
 
 <script>
-var G = {loader:'', rawUrl:'', xorKey:[], secret:''};
+var G = {loader:'', rawUrl:'', secret:''};
 var ABC = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
 
 function rnd(n){
@@ -130,7 +130,9 @@ function xorStr(str, k){
 
 function toBytes(str){
   var o = '';
-  for(var i=0;i<str.length;i++) o += '\\' + str.charCodeAt(i);
+  for(var i=0;i<str.length;i++){
+    o += '\\' + str.charCodeAt(i);
+  }
   return o;
 }
 
@@ -164,36 +166,72 @@ function cp(txt, el){
 }
 
 function buildCiphered(src, secret){
-  G.xorKey = [];
-  for(var i=0;i<24;i++) G.xorKey.push(Math.floor(Math.random()*256));
+  var key1 = [];
+  for(var i=0;i<32;i++) key1.push(Math.floor(Math.random()*256));
+  var key2 = [];
+  for(var i=0;i<16;i++) key2.push(Math.floor(Math.random()*256));
 
-  var xkStr = G.xorKey.join(',');
   var srcHash = fnv(src + secret);
   var secretHash = fnv(secret);
-  var xored = xorStr(src, G.xorKey);
-  var payload = toBytes(xored);
+
+  var stage1 = xorStr(src, key1);
+  var stage2 = xorStr(stage1, key2);
+  var payload = toBytes(stage2);
 
   var chunks = [];
-  for(var i=0;i<payload.length;i+=60) chunks.push('"' + payload.slice(i, i+60) + '"');
+  for(var i=0;i<payload.length;i+=70){
+    chunks.push('"' + payload.slice(i, i+70) + '"');
+  }
 
-  var vFh = '_' + rnd(8), vXd = '_' + rnd(8), vXk = '_' + rnd(8), vSh = '_' + rnd(8), vSec = '_' + rnd(8);
-  var vCh = '_' + rnd(8), vRw = '_' + rnd(8), vDc = '_' + rnd(8), vFn = '_' + rnd(8), vEr = '_' + rnd(8);
-  var vi = '_i' + rnd(4), vs = '_s' + rnd(4), vk = '_k' + rnd(4), vr = '_r' + rnd(4);
+  var v = {
+    fh: '_' + rnd(9), xd: '_' + rnd(9),
+    k1: '_' + rnd(8), k2: '_' + rnd(8),
+    sh: '_' + rnd(8), se: '_' + rnd(8),
+    ch: '_' + rnd(8), rw: '_' + rnd(8),
+    dc: '_' + rnd(8), fn: '_' + rnd(8),
+    er: '_' + rnd(8), i: '_i' + rnd(5),
+    s: '_s' + rnd(5), k: '_k' + rnd(5),
+    r: '_r' + rnd(5), a: '_a' + rnd(4),
+    t: '_t' + rnd(4)
+  };
 
-  return '-- LuarmorX Protected\n' +
-    'local function ' + vFh + '(' + vs + ') local ' + vr + ',n=0x811c9dc5,#' + vs + ' for ' + vi + '=1,n do ' + vr + '=bit32.band(bit32.bxor(' + vr + ',' + vs + ':byte(' + vi + '))*0x01000193,0xFFFFFFFF) end return string.format("%08x",' + vr + ') end\n' +
-    'local function ' + vXd + '(' + vs + ',' + vk + ') local ' + vr + ',n={},#' + vk + ' for ' + vi + '=1,#' + vs + ' do ' + vr + '[' + vi + ']=string.char(bit32.bxor(' + vs + ':byte(' + vi + '),' + vk + '[((' + vi + '-1)%n)+1])) end return table.concat(' + vr + ') end\n' +
-    'local ' + vXk + '={' + xkStr + '}\n' +
-    'local ' + vSh + '="' + srcHash + '"\n' +
-    'local ' + vSec + '="' + secretHash + '"\n' +
-    'local _a=...\n' +
-    'if not _a or ' + vFh + '(_a)\~=' + vSec + ' then game:GetService("Players").LocalPlayer:Kick("[LuarmorX] Anti-tamper.") return end\n' +
-    'local ' + vCh + '={' + chunks.join(',') + '}\n' +
-    'local ' + vRw + '=table.concat(' + vCh + ')\n' +
-    'local ' + vDc + '=' + vXd + '(' + vRw + ',' + vXk + ')\n' +
-    'if ' + vFh + '(' + vDc + '.._a)\~=' + vSh + ' then warn("[LuarmorX] Integrity fail") return end\n' +
-    'local ' + vFn + ',' + vEr + '=loadstring(' + vDc + ')\n' +
-    'if ' + vFn + ' then ' + vFn + '() else warn("[LuarmorX] "..(' + vEr + ' or "?")) end';
+  var code = [
+    '-- LuarmorX Protected',
+    'local function ' + v.fh + '(' + v.s + ')',
+    ' local ' + v.r + ',n=0x811c9dc5,#' + v.s,
+    ' for ' + v.i + '=1,n do ' + v.r + '=bit32.band(bit32.bxor(' + v.r + ',' + v.s + ':byte(' + v.i + '))*0x01000193,0xFFFFFFFF) end',
+    ' return string.format("%08x",' + v.r + ')',
+    'end',
+    'local function ' + v.xd + '(' + v.s + ',' + v.k + ')',
+    ' local ' + v.r + ',n={},#' + v.k,
+    ' for ' + v.i + '=1,#' + v.s + ' do ' + v.r + '[' + v.i + ']=string.char(bit32.bxor(' + v.s + ':byte(' + v.i + '),' + v.k + '[((' + v.i + '-1)%n)+1])) end',
+    ' return table.concat(' + v.r + ')',
+    'end',
+    'local ' + v.k1 + '={' + key1.join(',') + '}',
+    'local ' + v.k2 + '={' + key2.join(',') + '}',
+    'local ' + v.sh + '="' + srcHash + '"',
+    'local ' + v.se + '="' + secretHash + '"',
+    'local ' + v.a + '=...',
+    'if type(' + v.a + ')~="string" or ' + v.fh + '(' + v.a + ')~=' + v.se + ' then',
+    ' pcall(function() game:GetService("Players").LocalPlayer:Kick("[LuarmorX] Anti-tamper detected.") end)',
+    ' return',
+    'end',
+    'local ' + v.t + '=getfenv and getfenv() or _ENV',
+    'if ' + v.t + ' and (' + v.t + '.print or ' + v.t + '.warn) then',
+    ' local _op,_ow=' + v.t + '.print,' + v.t + '.warn',
+    ' if _op then ' + v.t + '.print=function(...) if select("#",...)>0 then local s=tostring(select(1,...)) if #s>400 and s:find("function",1,true) then pcall(function() game.Players.LocalPlayer:Kick("[LuarmorX] Dump attempt") end) return end end return _op(...) end end',
+    ' if _ow then ' + v.t + '.warn=function(...) if select("#",...)>0 then local s=tostring(select(1,...)) if #s>400 and s:find("function",1,true) then pcall(function() game.Players.LocalPlayer:Kick("[LuarmorX] Dump attempt") end) return end end return _ow(...) end end',
+    'end',
+    'local ' + v.ch + '={' + chunks.join(',') + '}',
+    'local ' + v.rw + '=table.concat(' + v.ch + ')',
+    'local ' + v.dc + '=' + v.xd + '(' + v.xd + '(' + v.rw + ',' + v.k2 + '),' + v.k1 + ')',
+    'if ' + v.fh + '(' + v.dc + '..' + v.a + ')~=' + v.sh + ' then warn("[LuarmorX] Integrity check failed") return end',
+    'local ' + v.fn + ',' + v.er + '=loadstring(' + v.dc + ')',
+    'if not ' + v.fn + ' then warn("[LuarmorX] "..tostring(' + v.er + ')) return end',
+    v.fn + '()'
+  ].join('\n');
+
+  return code;
 }
 
 async function uploadWorker(id, lua, loader){
@@ -212,7 +250,6 @@ async function uploadWorker(id, lua, loader){
 }
 
 async function doAll(){
-  var fnname = document.getElementById('fnname').value.trim().replace(/\s+/g,'-').toLowerCase() || 'script';
   var src = document.getElementById('src').value.trim();
   if(!src){ alert('Pega tu script Lua'); return; }
 
@@ -222,18 +259,20 @@ async function doAll(){
   document.getElementById('outblock').style.display = 'none';
 
   try{
-    setMsg('Cifrando script...'); setPb(15); await sleep(80);
-    G.secret = 'LMX_' + rnd(20);
+    setMsg('Cifrando script...'); setPb(20); await sleep(60);
+    G.secret = 'LMX_' + rnd(22);
     var ciphered = buildCiphered(src, G.secret);
 
-    setMsg('Subiendo al servidor...'); setPb(65);
+    setMsg('Subiendo...'); setPb(70);
     var scriptId = rnd(12);
     G.rawUrl = window.location.origin + '/api/' + scriptId;
-    G.loader = '-- LuarmorX Protected\nscript_key = "KEY"; -- A key system is active\nloadstring(game:HttpGet("' + G.rawUrl + '"))("' + G.secret + '")';
+    G.loader = '-- LuarmorX Protected\n' +
+      'script_key = "KEY"; -- A key system is active\n' +
+      'loadstring(game:HttpGet("' + G.rawUrl + '"))("' + G.secret + '")';
 
     await uploadWorker(scriptId, ciphered, G.loader);
 
-    setPb(100); await sleep(80);
+    setPb(100); await sleep(50);
 
     document.getElementById('urlbox').textContent = G.rawUrl;
     document.getElementById('preview-url').textContent = 'game:HttpGet("' + G.rawUrl + '")';
@@ -243,7 +282,7 @@ async function doAll(){
     ob.style.display = 'flex';
     ob.style.flexDirection = 'column';
     ob.style.gap = '10px';
-    setMsg('✓ Subido correctamente', 'var(--green)');
+    setMsg('✓ Listo', 'var(--green)');
     ob.scrollIntoView({behavior:'smooth', block:'start'});
 
   } catch(e){
