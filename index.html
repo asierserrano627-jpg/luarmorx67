@@ -1,341 +1,212 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>LuarmorX — Publisher</title>
-
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
+<title>LuarmorX — Auto Protect</title>
 <style>
-:root {
-  --bg:#080c18;
-  --panel:#0d1224;
-  --panel2:#111827;
-  --border:#1a2540;
-  --green:#00ff88;
-  --cyan:#00cfff;
-  --text:#dde6ff;
-  --muted:#71809e;
-}
-
-* { box-sizing:border-box; }
-
-body {
-  margin:0;
-  padding:25px 14px 50px;
-  background:var(--bg);
-  color:var(--text);
-  font-family:Arial,sans-serif;
-}
-
-main { max-width:760px; margin:auto; }
-
-header {
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  gap:12px;
-  margin:20px 0 12px;
-}
-
-.logo {
-  width:46px;
-  height:46px;
-  display:grid;
-  place-items:center;
-  border-radius:12px;
-  color:#080c18;
-  font-size:26px;
-  background:linear-gradient(135deg,var(--green),var(--cyan));
-}
-
-.brand {
-  font-size:26px;
-  font-weight:900;
-  letter-spacing:3px;
-  color:white;
-}
-
-.brand span { color:var(--green); }
-
-.subtitle {
-  text-align:center;
-  color:var(--muted);
-  font-size:11px;
-  letter-spacing:2px;
-  margin-bottom:28px;
-}
-
-.card {
-  background:var(--panel);
-  border:1px solid var(--border);
-  border-radius:15px;
-  padding:20px;
-  margin-bottom:16px;
-}
-
-.heading {
-  font-size:12px;
-  font-weight:bold;
-  letter-spacing:2px;
-  color:var(--muted);
-  margin-bottom:18px;
-}
-
-label {
-  display:block;
-  color:var(--muted);
-  font-size:11px;
-  margin:15px 0 8px;
-}
-
-input,textarea {
-  width:100%;
-  background:var(--panel2);
-  border:1px solid var(--border);
-  border-radius:9px;
-  padding:14px;
-  color:white;
-  outline:none;
-  font:13px monospace;
-}
-
-input:focus,textarea:focus { border-color:var(--cyan); }
-
-textarea {
-  min-height:260px;
-  resize:vertical;
-  line-height:1.6;
-}
-
-button {
-  width:100%;
-  border:0;
-  padding:15px;
-  border-radius:9px;
-  cursor:pointer;
-  font-weight:bold;
-  font-size:12px;
-  letter-spacing:1px;
-  margin-top:13px;
-}
-
-.primary {
-  background:linear-gradient(135deg,var(--green),var(--cyan));
-  color:#080c18;
-}
-
-.secondary {
-  background:var(--panel2);
-  border:1px solid var(--border);
-  color:white;
-}
-
-button:disabled { opacity:.5; cursor:wait; }
-
-.status {
-  display:none;
-  padding:13px;
-  border-radius:9px;
-  margin-top:13px;
-  font-size:12px;
-  overflow-wrap:anywhere;
-}
-
-.ok {
-  display:block;
-  background:#10251e;
-  border:1px solid #17633d;
-  color:var(--green);
-}
-
-.err {
-  display:block;
-  background:#2a141b;
-  border:1px solid #70303c;
-  color:#ff8794;
-}
-
-.url {
-  background:#050810;
-  border:1px solid var(--cyan);
-  padding:13px;
-  border-radius:8px;
-  color:var(--cyan);
-  font:12px monospace;
-  overflow-wrap:anywhere;
-}
-
-.note {
-  color:var(--muted);
-  font-size:11px;
-  line-height:1.7;
-}
-
-.footer {
-  text-align:center;
-  color:var(--muted);
-  font-size:10px;
-  margin-top:30px;
-}
-
-[hidden] { display:none !important; }
+:root{--bg:#080c18;--bg2:#0d1224;--bg3:#111827;--border:#1a2540;--green:#00ff88;--cyan:#00cfff;--red:#ff4757;--text:#dde6ff;--muted:#5a6a8a;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+*{box-sizing:inherit;margin:0;padding:0}
+html,body{background:var(--bg);color:var(--text);font-family:'Courier New',monospace;font-size:13px}
+body{display:flex;flex-direction:column;align-items:center;padding:16px 12px 40px}
+.logo{display:flex;align-items:center;gap:10px;margin:10px 0 20px}
+.logo-icon{width:34px;height:34px;background:linear-gradient(135deg,var(--green),var(--cyan));border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px}
+.logo-text{font-size:18px;font-weight:bold;letter-spacing:3px;color:#fff}
+.logo-text span{color:var(--green)}
+.wrap{width:100%;max-width:660px;display:flex;flex-direction:column;gap:10px}
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:14px}
+.card-title{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:10px}
+.field{display:flex;flex-direction:column;gap:5px;margin-bottom:10px}
+.field:last-child{margin-bottom:0}
+.lbl{font-size:10px;color:var(--muted)}
+input,textarea{background:var(--bg3);border:1px solid var(--border);border-radius:7px;padding:9px 12px;color:var(--text);font-family:'Courier New',monospace;font-size:12px;outline:none;width:100%;transition:border .15s}
+input:focus,textarea:focus{border-color:var(--cyan)}
+textarea{resize:vertical;min-height:130px;line-height:1.6}
+.btn{width:100%;padding:12px;border:none;border-radius:8px;font-family:'Courier New',monospace;font-size:13px;font-weight:bold;cursor:pointer;transition:.15s;letter-spacing:1px}
+.btn:active{transform:scale(.98)}
+.btn-main{background:linear-gradient(135deg,var(--green),var(--cyan));color:#080c18}
+.btn-main:disabled{opacity:.4;cursor:not-allowed;transform:none}
+.btn-sec{background:var(--bg3);border:1px solid var(--border);color:var(--text);margin-top:6px}
+.progress{height:3px;background:var(--bg3);border-radius:2px;overflow:hidden;display:none;margin-bottom:4px}
+.progress-bar{height:100%;background:linear-gradient(90deg,var(--green),var(--cyan));border-radius:2px;transition:width .4s;width:0%}
+.step-msg{font-size:11px;text-align:center;min-height:16px;margin-bottom:6px}
+.badge{display:inline-block;font-size:10px;padding:2px 8px;border-radius:20px}
+.b-ok{background:#0a2e1a;color:var(--green);border:1px solid #0a5e30}
+.code-box{background:#050810;border:1px solid var(--green);border-radius:7px;padding:12px;font-size:11px;color:var(--green);word-break:break-all;white-space:pre-wrap;line-height:1.7;max-height:160px;overflow-y:auto}
+.row-hd{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.cp-btn{background:var(--bg3);border:1px solid var(--border);color:var(--text);border-radius:5px;padding:3px 10px;font-size:10px;cursor:pointer;font-family:monospace}
+.cp-btn:hover{border-color:var(--green);color:var(--green)}
+.url-display{background:#050810;border:1px solid var(--cyan);border-radius:7px;padding:10px 12px;font-size:11px;color:var(--cyan);word-break:break-all;margin-bottom:8px;line-height:1.6}
+.url-display.green{border-color:var(--green);color:var(--green)}
+.lm-preview{background:#0d1225;border:1px solid var(--border);border-radius:10px;padding:18px;text-align:center}
+.lm-icon{font-size:26px;margin-bottom:6px}
+.lm-title{color:#fff;font-size:15px;font-weight:bold;font-family:sans-serif;margin-bottom:12px}
+.lm-code{background:#080c18;border-radius:7px;padding:12px;font-size:12px;line-height:1.9;text-align:left}
+.lm-key{color:#f7c948}.lm-fn{color:var(--cyan)}.lm-cm{color:var(--muted);font-style:italic}
+.lm-bar{height:2px;background:var(--bg3);border-radius:2px;margin-top:10px;overflow:hidden}
+.lm-bar-inner{height:100%;width:30%;background:linear-gradient(90deg,transparent,var(--cyan),transparent);animation:sh 2s infinite}
+@keyframes sh{0%{transform:translateX(-200%)}100%{transform:translateX(500%)}}
+.lm-note{font-size:9px;color:var(--muted);margin-top:8px;font-family:sans-serif}
 </style>
 </head>
-
 <body>
-<main>
+<div class="logo"><div class="logo-icon">⬡</div><div class="logo-text">LUARMOR<span>X</span></div></div>
+<div class="wrap">
 
-<header>
-  <div class="logo">⬡</div>
-  <div class="brand">LUARMOR<span>X</span></div>
-</header>
-
-<div class="subtitle">
-  SCRIPT PUBLISHING PLATFORM
+<div class="card">
+  <div class="card-title">Configuración</div>
+  <div class="field">
+    <div class="lbl">Nombre del archivo</div>
+    <input id="fnname" placeholder="mi-script"/>
+  </div>
 </div>
 
-<section class="card">
-
-  <div class="heading">NUEVO PROYECTO</div>
-
-  <label for="name">NOMBRE DEL SCRIPT</label>
-  <input id="name" maxlength="60"
-    placeholder="Mi proyecto Lua">
-
-  <label for="source">CÓDIGO LUA ORIGINAL</label>
-  <textarea id="source" maxlength="100000"
-    spellcheck="false"
-    placeholder="-- Pega aquí tu código Lua"></textarea>
-
-  <button class="primary" id="create">
-    PROTEGER Y PUBLICAR
-  </button>
-
-  <div id="status" class="status"></div>
-</section>
-
-<section class="card" id="result" hidden>
-
-  <div class="heading">PUBLICACIÓN COMPLETADA</div>
-
-  <p style="color:var(--green);font-size:13px">
-    ✓ Script publicado correctamente
-  </p>
-
-  <label>URL DE LA PÁGINA</label>
-  <div class="url" id="pageUrl"></div>
-  <button class="secondary" id="copyPage">
-    COPIAR URL DE PÁGINA
-  </button>
-
-  <label>URL DEL CÓDIGO LUA PROTEGIDO</label>
-  <div class="url" id="rawUrl"></div>
-  <button class="secondary" id="copyRaw">
-    COPIAR URL DEL CÓDIGO
-  </button>
-
-  <p class="note">
-    Guarda ambas direcciones. El contenido permanece disponible
-    mientras el archivo siga almacenado en Vercel Blob.
-  </p>
-</section>
-
-<section class="card">
-  <div class="heading">INFORMACIÓN</div>
-  <p class="note">
-    LuarmorX publica proyectos Lua propios y genera
-    direcciones individuales para cada publicación.
-  </p>
-  <p class="note">
-    La codificación básica no es cifrado fuerte.
-    No publiques secretos ni credenciales.
-  </p>
-</section>
-
-<div class="footer">
-  LUARMORX © 2026
+<div class="card">
+  <div class="card-title">Script Lua</div>
+  <textarea id="src" placeholder="-- Pega tu script aquí"></textarea>
 </div>
 
-</main>
+<div class="progress" id="pw"><div class="progress-bar" id="pb"></div></div>
+<div class="step-msg" id="stepmsg"></div>
+<button class="btn btn-main" id="mainbtn" onclick="doAll()">⬡ CIFRAR Y SUBIR</button>
+
+<div id="outblock" style="display:none;flex-direction:column;gap:10px">
+
+  <!-- Gist 1: Script cifrado -->
+  <div class="card">
+    <div class="card-title">Tu Gist <span class="badge b-ok">LIVE</span></div>
+    <div class="lbl" style="margin-bottom:6px">URL raw (para Roblox)</div>
+    <div class="url-display green" id="urlbox">—</div>
+    <div style="display:flex;gap:6px">
+      <button class="cp-btn" style="flex:1;padding:7px" onclick="cp(G.rawUrl,this)">Copiar URL raw</button>
+      <button class="cp-btn" style="flex:1;padding:7px" onclick="window.open(G.gistUrl,'_blank')">Ver Gist</button>
+    </div>
+  </div>
+
+  <!-- Preview loadstring -->
+  <div class="lm-preview" id="previewblock">
+    <div class="lm-icon">📜</div>
+    <div class="lm-title">Loadstring listo</div>
+    <div class="lm-code">
+      <span class="lm-key">script_key</span> = <span style="color:#e06c75">"KEY"</span>; <span class="lm-cm">-- A key system is active</span><br>
+      <span class="lm-fn">loadstring</span>(<span id="preview-url" class="lm-fn"></span>)()
+      <div class="lm-bar"><div class="lm-bar-inner"></div></div>
+    </div>
+    <div class="lm-note">Contents can not be displayed on browser • https://luarmor.net/</div>
+  </div>
+
+  <!-- Loader para distribuir -->
+  <div class="card" id="loadercard">
+    <div class="row-hd"><span>Loader <span class="badge b-ok">Distribuye esto</span></span><button class="cp-btn" onclick="cp(G.loader,this)">Copiar</button></div>
+    <div class="code-box" id="loaderbox"></div>
+  </div>
+
+  <button class="btn btn-sec" onclick="doAll()">⟳ Volver a cifrar y subir</button>
+
+</div>
+</div>
 
 <script>
-const $ = id => document.getElementById(id);
-
-function showStatus(message, success) {
-  const element = $("status");
-  element.textContent = message;
-  element.className = "status " + (success ? "ok" : "err");
+var WORKER_URL='https://TU-PROYECTO.vercel.app'; // ← PON AQUÍ TU URL DEL WORKER
+var G={loader:'',rawUrl:'',gistUrl:'',xorKey:[],secret:''};
+var ABC='abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+function rnd(n){var s='';for(var i=0;i<n;i++)s+=ABC[Math.floor(Math.random()*ABC.length)];return s;}
+function fnv(s){var h=0x811c9dc5;for(var i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,0x01000193)>>>0;}return h.toString(16).padStart(8,'0');}
+function xorStr(str,k){var o='';for(var i=0;i<str.length;i++)o+=String.fromCharCode(str.charCodeAt(i)^k[i%k.length]);return o;}
+function toBytes(str){var o='';for(var i=0;i<str.length;i++)o+='\\'+str.charCodeAt(i);return o;}
+function setMsg(t,c){var e=document.getElementById('stepmsg');e.style.color=c||'var(--cyan)';e.textContent=t;}
+function setPb(p){document.getElementById('pb').style.width=p+'%';}
+function sleep(ms){return new Promise(function(r){setTimeout(r,ms);});}
+function cp(txt,el){
+  if(!txt)return;
+  navigator.clipboard.writeText(txt).catch(function(){var t=document.createElement('textarea');t.value=txt;document.body.appendChild(t);t.select();document.execCommand('copy');document.body.removeChild(t);});
+  var o=el.textContent;el.textContent='¡Copiado!';setTimeout(function(){el.textContent=o;},1500);
 }
 
-async function copyText(text, button) {
-  try {
-    await navigator.clipboard.writeText(text);
-    button.textContent = "COPIADO";
-  } catch {
-    button.textContent = "NO SE PUDO COPIAR";
-  }
-
-  setTimeout(() => {
-    button.textContent = button.dataset.original;
-  }, 1600);
+function buildCiphered(src,secret){
+  G.xorKey=[];
+  for(var i=0;i<24;i++)G.xorKey.push(Math.floor(Math.random()*256));
+  var xkStr=G.xorKey.join(',');
+  var srcHash=fnv(src+secret);
+  var secretHash=fnv(secret);
+  var xored=xorStr(src,G.xorKey);
+  var payload=toBytes(xored);
+  var chunks=[];
+  for(var i=0;i<payload.length;i+=60)chunks.push('"'+payload.slice(i,i+60)+'"');
+  var vFh='_'+rnd(8),vXd='_'+rnd(8),vXk='_'+rnd(8),vSh='_'+rnd(8),vSec='_'+rnd(8);
+  var vCh='_'+rnd(8),vRw='_'+rnd(8),vDc='_'+rnd(8),vFn='_'+rnd(8),vEr='_'+rnd(8);
+  var vi='_i'+rnd(4),vs='_s'+rnd(4),vk='_k'+rnd(4),vr='_r'+rnd(4);
+  return '-- LuarmorX Protected\n'+
+    'local function '+vFh+'('+vs+') local '+vr+',n=0x811c9dc5,#'+vs+' for '+vi+'=1,n do '+vr+'=bit32.band(bit32.bxor('+vr+','+vs+':byte('+vi+'))*0x01000193,0xFFFFFFFF) end return string.format("%08x",'+vr+') end\n'+
+    'local function '+vXd+'('+vs+','+vk+') local '+vr+',n={},#'+vk+' for '+vi+'=1,#'+vs+' do '+vr+'['+vi+']=string.char(bit32.bxor('+vs+':byte('+vi+'),'+vk+'[(('+vi+'-1)%n)+1])) end return table.concat('+vr+') end\n'+
+    'local '+vXk+'={'+xkStr+'}\n'+
+    'local '+vSh+'="'+srcHash+'"\n'+
+    'local '+vSec+'="'+secretHash+'"\n'+
+    'local _a=...\n'+
+    'if not _a or '+vFh+'(_a)~='+vSec+' then game:GetService("Players").LocalPlayer:Kick("[LuarmorX] Anti-tamper.") return end\n'+
+    'local '+vCh+'={'+chunks.join(',')+'}\n'+
+    'local '+vRw+'=table.concat('+vCh+')\n'+
+    'local '+vDc+'='+vXd+'('+vRw+','+vXk+')\n'+
+    'if '+vFh+'('+vDc+'.._a)~='+vSh+' then warn("[LuarmorX] Integrity fail") return end\n'+
+    'local '+vFn+','+vEr+'=loadstring('+vDc+')\n'+
+    'if '+vFn+' then '+vFn+'() else warn("[LuarmorX] "..('+vEr+' or "?")) end';
 }
 
-$("copyPage").dataset.original = "COPIAR URL DE PÁGINA";
-$("copyRaw").dataset.original = "COPIAR URL DEL CÓDIGO";
-
-$("copyPage").addEventListener("click", () =>
-  copyText($("pageUrl").textContent, $("copyPage"))
-);
-
-$("copyRaw").addEventListener("click", () =>
-  copyText($("rawUrl").textContent, $("copyRaw"))
-);
-
-$("create").addEventListener("click", async () => {
-  const name = $("name").value.trim() || "Mi proyecto";
-  const source = $("source").value;
-
-  if (!source.trim()) {
-    showStatus("Pega el código Lua primero.", false);
-    return;
+async function uploadWorker(id, lua, loader){
+  var resp=await fetch(WORKER_URL+'/api/upload',{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({id:id,lua:lua,loader:loader})
+  });
+  if(!resp.ok){
+    var ej=await resp.json().catch(function(){return{};});
+    throw new Error(ej.error||'HTTP '+resp.status);
   }
+  return await resp.json();
+}
 
-  const button = $("create");
-  button.disabled = true;
-  button.textContent = "PUBLICANDO...";
+async function doAll(){
+  var fnname=document.getElementById('fnname').value.trim().replace(/\s+/g,'-').toLowerCase()||'script';
+  var src=document.getElementById('src').value.trim();
+  if(!src){alert('Pega tu script Lua');return;}
 
-  $("result").hidden = true;
+  var btn=document.getElementById('mainbtn');
+  btn.disabled=true;
+  document.getElementById('pw').style.display='block';
+  document.getElementById('outblock').style.display='none';
 
-  try {
-    const response = await fetch("/api/create", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({ name, source })
-    });
+  try{
+    // Paso 1: Cifrar
+    setMsg('Cifrando script...');setPb(15);await sleep(80);
+    G.secret='LMX_'+rnd(20);
+    var ciphered=buildCiphered(src,G.secret);
 
-    const data = await response.json();
+    // Paso 2: Subir al Worker
+    setMsg('Subiendo al servidor...');setPb(65);
+    var scriptId=rnd(12);
+    G.rawUrl=WORKER_URL+'/api/'+scriptId;
+    G.loader='-- LuarmorX Protected\nscript_key = "KEY"; -- A key system is active\nloadstring(game:HttpGet("'+G.rawUrl+'"))("'+G.secret+'")';
+    await uploadWorker(scriptId,ciphered,G.loader);
 
-    if (!response.ok) {
-      throw new Error(data.error || "Error al publicar");
-    }
+    setPb(100);await sleep(80);
 
-    $("pageUrl").textContent = data.pageUrl;
-    $("rawUrl").textContent = data.rawUrl;
-    $("result").hidden = false;
+    // Mostrar resultados
+    document.getElementById('urlbox').textContent=G.rawUrl;
+    document.getElementById('preview-url').textContent='game:HttpGet("'+G.rawUrl+'")';
+    document.getElementById('loaderbox').textContent=G.loader;
 
-    showStatus("Publicación completada.", true);
+    var ob=document.getElementById('outblock');
+    ob.style.display='flex';ob.style.flexDirection='column';ob.style.gap='10px';
+    setMsg('✓ Subido — Gist listo','var(--green)');
+    ob.scrollIntoView({behavior:'smooth',block:'start'});
 
-  } catch (error) {
-    showStatus(error.message, false);
-  } finally {
-    button.disabled = false;
-    button.textContent = "PROTEGER Y PUBLICAR";
+  }catch(e){
+    setMsg('Error: '+e.message,'var(--red)');
+  }finally{
+    document.getElementById('pw').style.display='none';
+    btn.disabled=false;
   }
-});
+}
 </script>
-
 </body>
 </html>
